@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FCI</title>
+    <script src="tau-prolog.js"></script>
+</head>
+<body>
+    <textarea id="program" rows="4" cols="50">
+        materia_es(tics, generica).
+        materia_es(algebra, generica).
+        materia_es(tallerredaccion, generica).
+        materia_es(programacion1, interdiciplinaria).
+        materia_es(programacionestructurada, interdiciplinaria).
+        materia_es(programacionoo, interdiciplinaria).
+        materia_es(redescomputadoras, profesionalizante).
+        materia_es(programacionavanzada, profesionalizante).
+        materia_es(programacionweb, profesionalizante).
+        materia_es(inteligenciaartificial, profesionalizante).
+        toma(ana,algebra).
+        toma(ana,programacionweb).
+        toma(ana,programacionavanzada).
+        toma(juan,programacion1).
+        toma(juan,tallerredaccion).
+        toma(juan,programacionestructurada).
+        toma(juan,programacionavanzada).
+        toma(pepe,tics).
+        toma(pepe,algebra).
+        toma(rosa,inteligenciaartificial).
+        toma(rosa,programacionweb).
+        interdiciplinaria(X):-materia_es(X, interdiciplinaria).
+        
+    </textarea><br>
+    <!-- Tipo de materias -->
+    <input type="text" id="tipo" onkeyup="changeTipo();" value="" placeholder="Tipo de Materia">
+    <!-- Boton -->
+    <input type="button" value="Ver tipo de materia" id="button" onclick="clickButton();">
+    <!-- Respuestas -->
+    <div class="example-result" id="result"></div>
+    <!-- materias de un alumno -->
+    <input type="text" id="name" onkeyup="changeName();" value="" placeholder="Nombre del alumno">
+    <!-- Boton -->
+    <input type="button" value="Ver materias del alumno" id="button2" onclick="clickButton2();">
+    <!-- Respuestas -->
+    <div class="example-result" id="result2"></div>
+    <!-- materias interdiciplinarias -->
+    <input type="text" id="names" onkeyup="changeMaterias();" value="" placeholder="Nombre del alumno">
+    <!-- Boton -->
+    <input type="button" value="Ver materias inter del alumno" id="button3" onclick="clickButton3();">
+    <!-- Respuestas -->
+    <div class="example-result" id="result3"></div>
+</body>
+
+<script type="text/javascript">
+    /** Tipo de materia **/
+    //funcion callback
+    function show(tipo){
+        //obtener resultado de la salida
+        let result = document.getElementById("result");
+        //return funcion callback
+        return function(answer){
+            //validar respuesta
+            if(pl.type.is_substitution(answer)){
+                //obtener el valor de la respuesta
+                let food = answer.lookup("X");
+                //Obtener la persona
+                let person = tipo != "Y" ? tipo : answer.lookup("Y");
+                //mostrar respuesta
+                result.innerHTML=result.innerHTML + "<p>" + person + " es una materia: " + food + "<p>"; 
+            }
+        };
+    }
+
+    //mostrar gustos de una persona
+    function gustos(tipo) {
+        //crear sesion
+        let sesion = pl.create(1000);
+        //obtener bc
+        let program = document.getElementById("program").value;
+        //limpiar salida
+        document.getElementById("result").innerHTML="";
+        //consultar bc
+        sesion.consult(program);
+        //objetivo de la consulta
+        sesion.query("materia_es("+tipo+", X).");
+        //buscar respuestas
+        sesion.answer(show(tipo), 1000);
+    }
+
+    //eventos
+    //onclick
+    function clickButton() {
+        //get person
+        let name = document.getElementById("tipo").value;
+        name = name != "" ? name : "Y";
+        //get likes
+        gustos(name);
+    }
+
+    //onchange
+    function chageTipo() {
+        let name = document.getElementById("tipo").value;
+        document.getElementById("button").value = "Esta materia es "+name;
+    }
+    changeTipo();
+
+    //Materias de alumno
+    function show2(name){
+        //obtener resultado de la salida
+        let result = document.getElementById("result2");
+        //return funcion callback
+        return function(answer){
+            //validar respuesta
+            if(pl.type.is_substitution(answer)){
+                //obtener el valor de la respuesta
+                let food = answer.lookup("X");
+                //Obtener la persona
+                let person = name != "Y" ? name : answer.lookup("Y");
+                //mostrar respuesta
+                result.innerHTML=result.innerHTML + "<p>Las materias de " + person + " son: " + food + "<p>"; 
+            }
+        };
+    }
+
+    //mostrar gustos de una persona
+    function materias(name) {
+        //crear sesion
+        let sesion = pl.create(1000);
+        //obtener bc
+        let program = document.getElementById("program").value;
+        //limpiar salida
+        document.getElementById("result2").innerHTML="";
+        //consultar bc
+        sesion.consult(program);
+        //objetivo de la consulta
+        sesion.query("toma("+name+", X).");
+        //buscar respuestas
+        sesion.answer(show2(name), 1000);
+    }
+
+    //eventos
+    //onclick
+    function clickButton2() {
+        //get person
+        let name = document.getElementById("name").value;
+        name = name != "" ? name : "Y";
+        //get likes
+        materias(name);
+    }
+
+    //onchange
+    function chageName() {
+        let name = document.getElementById("name").value;
+        document.getElementById("button2").value = "Esta materia es "+name;
+    }
+    changeTipo();
+
+    //Materias interdisiplinarias
+    //funcion callback
+    function show3(tipo){
+        //obtener resultado de la salida
+        let result = document.getElementById("result3");
+        //return funcion callback
+        return function(answer){
+            //validar respuesta
+            if(pl.type.is_substitution(answer)){
+                //obtener el valor de la respuesta
+                let food = answer.lookup("X");
+                //Obtener la persona
+                let person = tipo != "Y" ? tipo : answer.lookup("Y");
+                //mostrar respuesta
+                result.innerHTML=result.innerHTML + "<p>" + person + " es una materia: " + food + "<p>"; 
+            }
+        };
+    }
+
+    //mostrar gustos de una persona
+    function materiasInter(names) {
+        //crear sesion
+        let sesion = pl.create(1000);
+        let sesion2 = pl.create(1000);
+        //obtener bc
+        let program = document.getElementById("program").value;
+        //limpiar salida
+        document.getElementById("result").innerHTML="";
+        //consultar bc
+        sesion.consult(program);
+        //objetivo de la consulta
+        sesion.query("toma("+names+", X).");
+        //buscar respuestas
+        sesion.answer(show3(names), 1000);
+    }
+
+    function materiaComp(names) {
+        
+    }
+
+    //eventos
+    //onclick
+    function clickButton3() {
+        //get person
+        let names = document.getElementById("names").value;
+        names = names != "" ? names : "Y";
+        //get likes
+        materiasInter(names);
+    }
+
+    //onchange
+    function chageMaterias() {
+        let names = document.getElementById("names").value;
+        document.getElementById("button3").value = "Esta materia es "+names;
+    }
+    changeMaterias();
+</script>
+</html>
